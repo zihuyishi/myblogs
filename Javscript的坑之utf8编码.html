@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset='utf-8'>
+	<title>Javascript的string编码为utf16</title>
+  </head>
+  <body>
+	<div id="wmd-preview" class="wmd-preview"><br class="md-section-divider" />
+	  <h1 id="1原由" data-anchor-id="stah">1.原由</h1>
+	  <p data-anchor-id="33n8">使用javascript开发的时候发现，在部分第三方库中，对emoji的字符串进行UTF8编码出错。</p>
+	  <p data-anchor-id="223a">调查发现，javascript的string编码为UTF16(<a href="http://www.ecma-international.org/ecma-262/6.0/index.html" target="_blank">出处</a>),而我们大部分时候使用的是UTF8。由于UTF16的设计，在大部分情况下编码javascript的字符串到UTF8都是没问题的。</p>
+	  <p data-anchor-id="y7c3">出问题的地方在剩下的那部分，我们先看UTF8和UTF16的异同。</p>
+	  <div class="md-section-divider">&nbsp;</div>
+	  <h1 id="2utf8-and-utf16" data-anchor-id="bd6e">2.UTF8 and UTF16</h1>
+	  <p data-anchor-id="cyop">wiki上关于<a href="https://en.wikipedia.org/wiki/UTF-8" target="_blank">UTF8</a>和<a href="https://en.wikipedia.org/wiki/UTF-16" target="_blank">UTF16</a>的资料已经很详细了。</p>
+	  <p data-anchor-id="ywp1">首先要理解的是无论是UTF8还是UTF16都是Unicode的一种形式。而Unicode其实就是一个字符表，范围为0~0x10FFFF。其间的每个数字是一个code point,所有的这些code point组成了Unicode的code space.</p>
+	  <p data-anchor-id="ya7x">而UTF8和UTF16则是code point的不同编码方式。</p>
+	  <p data-anchor-id="8xtf">UTF8使用变长的8-bit code units来表示code point。具体编码方式可以看wiki百科的说明。</p>
+	  <p data-anchor-id="4st3">UTF16的code units则是16-bit.并且当code point在0~0xFFFF的范围内时,UTF16的code units在数字上等于code point的值。在U+10000到U+10FFFF范围时则需要进行编码。</p>
+	  <div class="md-section-divider">&nbsp;</div>
+	  <h1 id="3目标" data-anchor-id="jxe5">3.目标</h1>
+	  <p data-anchor-id="j8py">我们的目标是将javascript的字符串进行UTF8编码，而javascript字符串的编码方式为UTF16，因此我们的目的就是将UTF16转换为UTF8.</p>
+	  <p data-anchor-id="exsw">转换的过程也很简单，UTF16-&gt;code points-&gt;UTF8</p>
+	  <div class="md-section-divider">&nbsp;</div>
+	  <h1 id="4问题所在" data-anchor-id="6nbd">4.问题所在</h1>
+	  <p data-anchor-id="1iac">上面我们可以看到，对于javascript的字符串，也就是UTF16编码的字符串，由于当code point的值在0~0xFFFF之间时, UTF16的编码值和code point上数值相同，并且生活中大部分情况下我们只会用到这个范围内的值，因此部分第三方库在进行UTF8编码时，直接省略了之前的UTF16-&gt;code points这一步。</p>
+	  <p data-anchor-id="wnyw">也就是说这个范围内的UTF16进行UTF8编码的时候可以直接调用javascript中<code class="code-black">String.charCodeAt()</code>方法来获取每个UTF16字符code point的值，然后再根据UTF8编码的规则进行转换。</p>
+	  <p data-anchor-id="w61m">然而<code class="code-black">String.charCodeAt()</code>方法获取的值并不是和Unicode的code points完全相等，因此就会出错。</p>
+	  <div class="md-section-divider">&nbsp;</div>
+	  <h1 id="5解决方法" data-anchor-id="2omr">5.解决方法</h1>
+	  <p data-anchor-id="xies">如果是使用nodejs开发的话，可以直接使用utf8.js这个库。</p>
+	  <p data-anchor-id="bvsw">而在浏览器中则可根据wiki上的编码解码规则，使用<code class="code-black">String.charCodeAt()</code>方法获得UTF16的值，然后解码为Unicode的code point,之后编码code point到UTF8即可。是比较简单的，而且可以借鉴utf8.js的写法。</p>
+	  <p data-anchor-id="pq0b">不过因为不同第三方库对字符串进行UTF8编码的情景不同，因此可能需要针对单独的库进行相应的调整，只要掌握了UTF8和UTF16的编码解码过程并不难。然而还是要鄙视一下这种自己造轮子结果漏气的行为。</p>
+	</div>
+  </body>
+</html>
+
