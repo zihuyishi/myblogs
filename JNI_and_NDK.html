@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Java - JNI &amp; NDK</title>
+<!-- 2016-07-14 Thu 17:53 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Saye" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Java - JNI &amp; NDK</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Introduce</a></li>
+<li><a href="#sec-2">2. JNI</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Overview</a></li>
+<li><a href="#sec-2-2">2.2. 命名约定</a></li>
+<li><a href="#sec-2-3">2.3. Reference</a>
+<ul>
+<li><a href="#sec-2-3-1">2.3.1. Local References</a></li>
+<li><a href="#sec-2-3-2">2.3.2. Global References</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-4">2.4. 基本类型</a>
+<ul>
+<li><a href="#sec-2-4-1">2.4.1. Signatures</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-5">2.5. 方法的调用</a></li>
+<li><a href="#sec-2-6">2.6. 字符串</a>
+<ul>
+<li><a href="#sec-2-6-1">2.6.1. jstring to UTF8</a></li>
+<li><a href="#sec-2-6-2">2.6.2. UTF8 to jstring</a></li>
+<li><a href="#sec-2-6-3">2.6.3. JNI的UTF8 bug</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-3">3. NDK</a>
+<ul>
+<li><a href="#sec-3-1">3.1. Android.mk</a></li>
+<li><a href="#sec-3-2">3.2. Application.mk</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduce</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+最近在搞android开发，需要研究jni和ndk相关知识，故做个总结。
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> JNI</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Overview</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+JNI用来在java中调用c/c++代码。
+Native methods通过System.loadLibrary 加载, 例如
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-Java">package pkg;
+
+class Cls {
+	native double f(int i, String s);
+	static {
+		System.loadLibrary("pkg_Cls");
+	}
+}
+</pre>
+</div>
+
+<p>
+例子中回去根据系统加载相应库，linux下为libpkg_Cls.so, Windows下为pkg_Cls.dll.
+</p>
+
+<p>
+Native library 可能被静态链接(statically linked). 具体的方式由实现来决定。
+如果一个library L 中定义了JNI_OnLoad_L 函数，此库会和VM静态链接. 
+如果该库同时定义了JNI_OnUnload_L，当gc时会调用此函数.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> 命名约定</h3>
+</div>
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Reference</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+基本类型如integer, 在 Java 和 native 代码间通过复制传递. Java的Object则通过引用传递.
+引用分为Global References 和 Local References
+</p>
+</div>
+<div id="outline-container-sec-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> Local References</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+Local References 紧在当前函数中有效
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> Global References</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<p>
+    Global References 有效范围持续到被显示释放之前。
+在实际开发中就有遇到持有java单例对象的需求，可以调用JNI的NewGlobalRef(jobject)方法将其提升为Global References.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4"><span class="section-number-3">2.4</span> 基本类型</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+JNI提供了如下基本类型
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Java Type</th>
+<th scope="col" class="left">Native Type</th>
+<th scope="col" class="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">boolean</td>
+<td class="left">jboolean</td>
+<td class="left">unsigned 8 bits</td>
+</tr>
+
+<tr>
+<td class="left">byte</td>
+<td class="left">jbyte</td>
+<td class="left">signed 8 bits</td>
+</tr>
+
+<tr>
+<td class="left">char</td>
+<td class="left">jchar</td>
+<td class="left">unsigned 16 bits</td>
+</tr>
+
+<tr>
+<td class="left">short</td>
+<td class="left">jshort</td>
+<td class="left">signed 16 bits</td>
+</tr>
+
+<tr>
+<td class="left">int</td>
+<td class="left">jint</td>
+<td class="left">signed 32 bits</td>
+</tr>
+
+<tr>
+<td class="left">long</td>
+<td class="left">jlong</td>
+<td class="left">signed 61 bits</td>
+</tr>
+
+<tr>
+<td class="left">float</td>
+<td class="left">jfloat</td>
+<td class="left">32 bits</td>
+</tr>
+
+<tr>
+<td class="left">double</td>
+<td class="left">jdouble</td>
+<td class="left">64 bits</td>
+</tr>
+
+<tr>
+<td class="left">void</td>
+<td class="left">void</td>
+<td class="left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+
+<pre class="src src-cpp">#define JNI_FLASE 0
+#define JNI_TRUE 1
+typedef jint jsize;
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4-1" class="outline-4">
+<h4 id="sec-2-4-1"><span class="section-number-4">2.4.1</span> <a id="SIGN" name="SIGN"></a>Signatures</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+并且类型都有相应的签名，在native调用java方法时十分有用
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Type Signature</th>
+<th scope="col" class="left">Java Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">Z</td>
+<td class="left">boolean</td>
+</tr>
+
+<tr>
+<td class="left">B</td>
+<td class="left">byte</td>
+</tr>
+
+<tr>
+<td class="left">C</td>
+<td class="left">char</td>
+</tr>
+
+<tr>
+<td class="left">S</td>
+<td class="left">short</td>
+</tr>
+
+<tr>
+<td class="left">I</td>
+<td class="left">int</td>
+</tr>
+
+<tr>
+<td class="left">J</td>
+<td class="left">long</td>
+</tr>
+
+<tr>
+<td class="left">F</td>
+<td class="left">float</td>
+</tr>
+
+<tr>
+<td class="left">D</td>
+<td class="left">double</td>
+</tr>
+
+<tr>
+<td class="left">Lfully-qualified-class;</td>
+<td class="left">fully-qualified-class</td>
+</tr>
+
+<tr>
+<td class="left">[type</td>
+<td class="left">type[]</td>
+</tr>
+
+<tr>
+<td class="left">(arg-types) ret-type</td>
+<td class="left">method type</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+其中 Lfully-qualified-class; (注意有';') 表示java的类型，如String为 "Ljava/lang/String;".
+method type为方法的签名， 例如
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-cpp">long f(int n, Strings, int[] arr);
+</pre>
+</div>
+<p>
+的签名为 "(ILjava/lang/String;[I)J".
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-5" class="outline-3">
+<h3 id="sec-2-5"><span class="section-number-3">2.5</span> 方法的调用</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+c代码可以通过JNI调用java代码，流程：
+</p>
+<ul class="org-ul">
+<li>获取需要调用方法的jobject对象.
+</li>
+<li>通过JNI的GetObjectClass()获取jclass.
+</li>
+<li>通过JNI的GetMethodID()获取需要调用的jmethodID.
+GetMethodID签名为(jclass clazz, const char *name, const char *sig);
+其中第三个参数sig为该方法的签名，例如：
+<div class="org-src-container">
+
+<pre class="src src-cpp">class A {
+	//GetMethodID(clazz, "foo", "(JLjava/lang/String;)V")
+	public void foo(long a, String b); 
+	//GetMethodID(clazz, "bar", "()I")
+	public int bar();
+}
+</pre>
+</div>
+<p>
+详细见<a href="#SIGN">2.4.1</a>
+</p>
+</li>
+<li>通过JNI的CallXXXMethod()调用相关方法，其中XXX代表此方法的返回值，如Long(CallLongMethod).
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-2-6" class="outline-3">
+<h3 id="sec-2-6"><span class="section-number-3">2.6</span> 字符串</h3>
+<div class="outline-text-3" id="text-2-6">
+</div><div id="outline-container-sec-2-6-1" class="outline-4">
+<h4 id="sec-2-6-1"><span class="section-number-4">2.6.1</span> jstring to UTF8</h4>
+<div class="outline-text-4" id="text-2-6-1">
+<p>
+通过JNI的 const char* GetStringUTFChars(jstring, jboolean <b>).
+返回值需要使用 ReleseStringUTFChars(jstring, const char</b>)释放.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-6-2" class="outline-4">
+<h4 id="sec-2-6-2"><span class="section-number-4">2.6.2</span> UTF8 to jstring</h4>
+<div class="outline-text-4" id="text-2-6-2">
+<p>
+jstring NewStringUTF(const char*);
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-6-3" class="outline-4">
+<h4 id="sec-2-6-3"><span class="section-number-4">2.6.3</span> JNI的UTF8 bug</h4>
+<div class="outline-text-4" id="text-2-6-3">
+<p>
+某些版本的JNI有bug，无法正确处理codepoint大于0x10000的UTF8(常见于emoji),调用NewStringUTF会抛出异常.
+我的解决方法是将字符串进行base64编码后传给NewStringUTF,然后在java端进行解码。
+如下:
+</p>
+<ul class="org-ul">
+<li>c++端传入字符串
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-cpp">JNIEnv *env = xxx;
+const char *src = xxx;
+jobject instance;
+jclass clazz = env-&gt;GetObjectClass(instance);
+jmethodID methodId = GetMethodID(instance, "foo", "(Ljava/lang/String;)V");
+size_t len
+char *base64 = base64_encode(src, strlen(src), &amp;len); //base64编码
+jstring data = env-&gt;NewStringUTF(base64);
+free(base64);
+env-&gt;CallVoidMethod(instance, methodId, data);
+//...
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>java端解析字符串
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-java">public String decodeBase64(String src) {
+	byte[] base64 = src.getBytes();
+	try {
+		byte[] data = Base64.decode(base64, Base64.DEFAULT);
+		return new String(data);
+	} catch (IllegalArgumentException e) {
+		//do something
+	}
+	return null;
+}
+//c++端代码调用此方法
+public void foo(String data) {
+	String origin = decodeBase64(data);
+	//do something
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> NDK</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+目前NDK有两种方式编译，一种是写Android.mk文件，一种是使用gradle脚本。其中第二种目前还在实验阶段，并且资料较少，所以我选择了第一种方式。
+</p>
+
+<p>
+按照我的理解，Android.mk就是相当于Makefile.只是给ndk使用而已。
+为了方便使用ndk，将ndk下载之后将ANDROID_NDK_HOME写进bash的配置文件中，我使用zsh,所以写进了.zshrc
+</p>
+<div class="org-src-container">
+
+<pre class="src src-bash">export ANDROID_NDK_HOME path/to/ndk
+export PATH="$ANDROID_NDK_HOME:$PATH"
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Android.mk</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+基本格式如下
+</p>
+<div class="org-src-container">
+
+<pre class="src src-makefile">LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := mylib
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
+LOCAL_SRC_FILES := $(LOCAL_PATH)/src/hello.cpp
+LOCAL_LDLIBS := -llog
+LOCAL_CPPFLAGS := -D__ANDROID__ -std=c++11
+
+include $(BUILD_SHARED_LIBRARY)
+</pre>
+</div>
+
+<p>
+如果你还有其他已经编译好的静态or动态库，也可以加入
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-makefile">LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := mystatic
+LOCAL_SRC_FILES := ./deps/libs/$(TARGET_ARCH_ABI)/liba.a
+include $(PREBUILD_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := myshared
+LOCAL_SRC_FILES := ./deps/libs/$(TARGET_ARC_ABI)/libshared.so
+include $(PREBUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := mylib
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
+LOCAL_SRC_FILES := $(LOCAL_PATH)/src/hello.cpp
+LOCAL_LDLIBS := -llog
+LOCAL_CPPFLAGS := -D__ANDROID__ -std=c++11
+
+include $(BUILD_SHARED_LIBRARY)
+</pre>
+</div>
+
+<p>
+可以看到对lib路径赋值时使用了预定义的
+</p>
+<pre class="example">
+LOCAL_SRC_FILES := ./deps/libs/$(TARGET_ARCH_ABI)/liba.a
+</pre>
+<p>
+ 这是因为不同架构需要不同的库文件。
+因此实际中文件目录可能如下
+deps/libs
+</p>
+<pre class="example">
+|-- armeabi-v7a
+|   |--- liba.a
+|   |--- libshared.so
+|
+----x86
+    |--- liba.a
+    |--- libshared.so
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Application.mk</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+这个文件主要是一些编译选项了.列举一些我使用的:
+</p>
+
+<ol class="org-ol">
+<li>APP_ABI  编译到的目标架构，如armeabi-v7a, x86.
+</li>
+<li>APP_CPPFLAGS
+<dl class="org-dl">
+<dt> -fexception </dt><dd>支持异常，由于历史原因默认关闭了，所以要主动打开
+</dd>
+<dt> -frtti </dt><dd>make c++ runtime support RTTI
+</dd>
+</dl>
+</li>
+<li>APP_STR 使用的stl库，必须设置此选项才能使用stl。详细可选可以见官网，我使用的是gnustl_static
+</li>
+</ol>
+
+<p>
+我的文件如下
+</p>
+<div class="org-src-container">
+
+<pre class="src src-makefile">APP_ABI := armeabi-v7a
+APP_STL := gnustl_static
+APP_CPPFLAGS += -fexceptions
+APP_CPPFLAGS += -frtti
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Saye</p>
+<p class="date">Created: 2016-07-14 Thu 17:53</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
